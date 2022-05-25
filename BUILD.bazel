@@ -1,0 +1,111 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary", "cc_test")
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "configure_make")
+
+configure_make(
+    name = "texinfo",
+    out_binaries = [
+        "makeinfo",
+    ],
+    env = select({
+        # Without this option on macOS we will have the following issue:
+        # .../libtool: no output file specified (specify with -o output).
+        "@bazel_tools//src/conditions:darwin": {"AR": ""},
+        "//conditions:default": {},
+    }),
+    lib_source = "@com_github_texinfo//:all",
+)
+
+configure_make(
+    name = "libunwind",
+    out_static_libs = [
+        "libunwind.a",
+    ],
+    env = select({
+        # Without this option on macOS we will have the following issue:
+        # .../libtool: no output file specified (specify with -o output).
+        "@bazel_tools//src/conditions:darwin": {"AR": ""},
+        "//conditions:default": {},
+    }),
+    lib_source = "@com_github_libunwind//:all",
+)
+
+configure_make(
+    name = "binutils",
+    out_static_libs = [
+        "libbfd.a",
+        "libiberty.a",
+    ],
+    configure_options = [
+        "--enable-install-libiberty",
+    ],
+    env = select({
+        # Without this option on macOS we will have the following issue:
+        # .../libtool: no output file specified (specify with -o output).
+        "@bazel_tools//src/conditions:darwin": {"AR": ""},
+        "//conditions:default": {},
+    }),
+    deps = [
+        ":texinfo",
+    ],
+    lib_source = "@com_github_binutils//:all",
+)
+
+cc_library(
+    name = "backward",
+    alwayslink = True,
+    hdrs =  glob(["backward.hpp"]),
+    linkopts = [
+         # For libdwarf
+         #"-ldwarf",
+         #"-lelf",
+         #"-ldl",
+         #"-lz",
+        # For libunwind 
+        #"-luwind",
+        # For elfutils
+        #"-lelf",
+        #"-lz",
+        #"-llzma",
+        #"-ldl",
+        # For binutils
+        #"-lbfd",
+        "-ldl",
+        "-lz",
+        #"-lunwind",
+        "-llzma",
+        #"-liberty",
+        #"L/my_lib",
+    ],
+    defines = [
+        # For elfutils
+        #"BACKWARD_HAS_DW",
+        # For binutils
+        "BACKWARD_HAS_BFD",
+        # For libdwarf
+        #"BACKWARD_HAS_DWARF",
+        # For libunwind
+        "BACKWARD_HAS_LIBUNWIND",
+    ],
+    deps = [
+        ":binutils",
+        ":libunwind",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "test-stack-trace",
+    defines = [
+        "GLOG_NO_ABBREVIATED_SEVERITIES",
+    ],
+    srcs = [
+        "failure-function-install.cc",
+        "failure-function-install.h",
+        "test.cc",
+    ],
+    deps = [
+        "@com_github_google_googletest//:gtest_main",
+        "@com_github_google_glog//:glog",
+        "//:backward",
+    ],
+)

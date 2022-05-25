@@ -1,0 +1,54 @@
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: ["macos-latest", "ubuntu-latest", "windows-latest"]
+        os: ["macos-latest", "ubuntu-latest"]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # Checkout the repository under $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: ld version
+        run: ld -v
+
+      # - name: Install libelf
+      #   run: brew install elfutils   
+
+      # - name: Build
+      #   run: |
+      #     bazel build \
+      #       --spawn_strategy=local \
+      #       -c dbg \
+      #       --strip="never" \
+      #       ...
+      - name: Test
+        run: |
+          bazel test \
+            --spawn_strategy=local \
+            --verbose_failures \
+            -c dbg \
+            --strip="never" \
+            --test_output=errors \
+            :test-stack-trace \
+            --test_arg=--gtest_shuffle
+
+      - name: Debug using tmate (if failure)
+        uses: mxschmitt/action-tmate@v3   
+        if: ${{ failure() }}   
