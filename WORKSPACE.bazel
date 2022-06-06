@@ -1,0 +1,212 @@
+workspace(name = "bazelified-backward")
+
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository", "new_git_repository")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+
+maybe(
+    http_archive,
+    name = "rules_foreign_cc",
+    url = "https://github.com/bazelbuild/rules_foreign_cc/archive/0.5.1.tar.gz",
+    sha256 = "33a5690733c5cc2ede39cb62ebf89e751f2448e27f20c8b2fbbc7d136b166804",
+    strip_prefix = "rules_foreign_cc-0.5.1",
+)
+
+load("@rules_foreign_cc//foreign_cc:repositories.bzl", "rules_foreign_cc_dependencies")
+rules_foreign_cc_dependencies()
+
+_ALL_CONTENT = """\
+filegroup(
+    name = "all",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+"""
+
+# _LIBDW_CONTENT = """\
+# filegroup(
+#     name = "all",
+#     srcs = glob(["libdw/**"]),
+#     visibility = ["//visibility:public"],
+# )
+# """
+
+# maybe(
+#     http_archive,
+#     name = "com_github_libdwarf",
+#     url = "https://github.com/davea42/libdwarf-code/releases/download/v0.4.0/libdwarf-0.4.0.tar.xz",
+#     sha256 = "8a2d5869d293d5ce8949bf35a373f5b233a557ef5d681217e5f5c1ba7496499f",
+#     strip_prefix = "libdwarf-0.4.0",
+#     build_file_content = _ALL_CONTENT,
+# )
+
+maybe(
+    http_archive,
+    name = "com_github_texinfo",
+    url = "https://ftp.gnu.org/gnu/texinfo/texinfo-6.8.tar.xz",
+    build_file_content = _ALL_CONTENT,
+    sha256 = "8eb753ed28bca21f8f56c1a180362aed789229bd62fff58bf8368e9beb59fec4",
+    strip_prefix = "texinfo-6.8",
+)
+
+maybe(
+    http_archive,
+    name = "com_github_binutils",
+    url = "https://ftp.gnu.org/gnu/binutils/binutils-2.38.tar.gz",
+    build_file_content = _ALL_CONTENT,
+    sha256 = "b3f1dc5b17e75328f19bd88250bee2ef9f91fc8cbb7bd48bdb31390338636052",
+    strip_prefix = "binutils-2.38",
+)
+
+maybe(
+    http_archive,
+    name = "com_github_libunwind",
+    url = "https://github.com/libunwind/libunwind/releases/download/v1.6.2/libunwind-1.6.2.tar.gz",
+    build_file_content = _ALL_CONTENT,
+    sha256 = "4a6aec666991fb45d0889c44aede8ad6eb108071c3554fcdff671f9c94794976",
+    strip_prefix = "libunwind-1.6.2",
+)
+
+# maybe(
+#     http_archive,
+#     name = "com_github_elfutils",
+#     url = "https://sourceware.org/elfutils/ftp/elfutils-latest.tar.bz2",
+#     build_file_content = _ALL_CONTENT,
+#     sha256 = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8",
+#     strip_prefix = "elfutils-0.187",
+# )
+
+# maybe(
+#     http_archive,
+#     name = "com_github_bzip2",
+#     url = "http://archive.ubuntu.com/ubuntu/pool/main/b/bzip2/bzip2_1.0.6.orig.tar.bz2",
+#     build_file_content = _ALL_CONTENT,
+#     sha256 = "d70a9ccd8bdf47e302d96c69fecd54925f45d9c7b966bb4ef5f56b770960afa7",
+#     strip_prefix = "bzip2-1.0.6",
+# )
+
+# maybe(
+#     http_archive,
+#     name = "com_github_libdw",
+#     url = "https://sourceware.org/elfutils/ftp/elfutils-latest.tar.bz2",
+#     build_file_content = _LIBDW_CONTENT,
+#     sha256 = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8",
+#     strip_prefix = "elfutils-0.187",
+# )
+
+# maybe(
+#     git_repository,
+#     name = "com_github_3rdparty_bazel_rules_curl",
+#     remote = "https://github.com/3rdparty/bazel-rules-curl",
+#     commit = "5748da4b2594fab9410db9b5e6619b47cb5688e0",
+#     shallow_since = "1651700487 +0300",
+# )
+
+# load("@com_github_3rdparty_bazel_rules_curl//bazel:deps.bzl", curl_deps = "deps")
+# curl_deps()
+
+# new_git_repository(
+#     name = "com_github_binutils",
+#     remote = "https://github.com/hermitcore/binutils",
+#     build_file_content = _ALL_CONTENT,
+#     commit = "e961c696dcb226d5b58bd8b17b1cf5491d87f846",
+#     shallow_since = "1648111135 +0100",
+#     #branch = "binutils-2_38",
+# )
+
+# For elfutils!
+# maybe(
+#     http_archive,
+#     name = "com_github_curl_curl",
+#     url = "https://github.com/curl/curl/archive/refs/tags/curl-7_83_0.tar.gz",
+#     sha256 = "9350985ab43591ecd04b087f9c9dad84b952c35c6012e2a08ae355ae797db988",
+#     strip_prefix = "curl-curl-7_83_0",
+#     build_file = "@com_github_3rdparty_bazel_rules_curl//:BUILD.bazel",
+#     repo_mapping = repo_mapping,
+# )
+
+
+
+# maybe(
+#     git_repository,
+#     name = "com_github_nelhage_rules_boost",
+#     commit = "32164a62e2472077320f48f52b8077207cd0c9c8",
+#     remote = "https://github.com/nelhage/rules_boost",
+#     shallow_since = "1650381330 -0700",
+# )
+
+# load("@com_github_nelhage_rules_boost//:boost/boost.bzl", "boost_deps")
+# boost_deps()
+
+
+# new_git_repository(
+#     name = "com_github_elfutils",
+#     remote = "https://sourceware.org/elfutils/ftp/elfutils-latest.tar.bz2",
+#     build_file_content = _BUNUTILS_CONTENT,
+#     commit = "cff53f1784c9a4344604bedf41b7d499b3eb30d5",
+#     shallow_since = "",
+# )
+
+# new_git_repository(
+#     name = "com_github_dwarf",
+#     remote = "https://github.com/jrfonseca/libdwarf.git",
+#     build_file_content = _ALL_CONTENT,
+#     commit = "e64874a4c62fff0ae07d5146331068b187d2cffc",
+#     shallow_since = "",
+# )
+
+# new_git_repository(
+#     name = "com_github_dwarf",
+#     remote = "https://github.com/jrfonseca/libdwarf.git",
+#     build_file_content = _ALL_CONTENT,
+#     commit = "e64874a4c62fff0ae07d5146331068b187d2cffc",
+#     shallow_since = "",
+# )
+
+# new_git_repository(
+#     name = "com_github_unwind",
+#     remote = "https://github.com/libunwind/libunwind.git",
+#     build_file_content = _ALL_CONTENT,
+#     commit = "7cf6e84bb86ff5840896b4910ccc3865d4f00ffb",
+#     shallow_since = "",
+# )
+
+# git_repository(
+#     name = "bazel-unwind",
+#     remote = "https://github.com/ArthurBandaryk/libunwind-bazel.git",
+#     commit = "30f10c0f8841d06b237ba1591c446ae67323b84c",
+#     #shallow_since = "1603243310 -0700",
+# )
+
+# maybe(
+#     new_git_repository,
+#     name = "libunwind",
+#     build_file = "@bazel-unwind//:BUILD.libunwind",
+#     commit = "0a6bb16aacf2d4434dc5622eae8e65b3d1badb39",
+#     remote = "https://github.com/pblaberge/libunwind-bazel.git",
+#     shallow_since = "1603243310 -0700",
+# )
+
+maybe(
+    http_archive,
+    name = "com_github_gflags_gflags",
+    url = "https://github.com/gflags/gflags/archive/v2.2.2.tar.gz",
+    sha256 = "34af2f15cf7367513b352bdcd2493ab14ce43692d2dcd9dfc499492966c64dcf",
+    strip_prefix = "gflags-2.2.2",
+)
+
+maybe(
+    http_archive,
+    name = "com_github_google_glog",
+    url = "https://github.com/google/glog/archive/refs/tags/v0.5.0.tar.gz",
+    sha256 = "eede71f28371bf39aa69b45de23b329d37214016e2055269b3b5e7cfd40b59f5",
+    strip_prefix = "glog-0.5.0",
+)
+
+maybe(
+    http_archive,
+    name = "com_github_google_googletest",
+    url = "https://github.com/google/googletest/archive/release-1.11.0.tar.gz",
+    sha256 = "b4870bf121ff7795ba20d20bcdd8627b8e088f2d1dab299a031c1034eddc93d5",
+    strip_prefix = "googletest-release-1.11.0",
+)
